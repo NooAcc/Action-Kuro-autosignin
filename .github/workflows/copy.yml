@@ -1,0 +1,29 @@
+name: s3 bucket Sync
+on:
+  schedule:
+
+# 4 times everyday
+  - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  douban:
+    name: s3 bucket Sync 
+    runs-on: ubuntu-latest
+    steps:
+    - name: disk check
+      run: df -h
+  
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Setup Rclone
+    - name: Setup Rclone
+      uses: AnimMouse/setup-rclone@v1
+      with:
+        rclone_config: ${{ secrets.RCLONE_CONFIG }}
+
+    # Rclone Sync to B2 & R2
+    - name: Rclone Sync 
+      run: |
+          rclone copy PIKPAK:/kaka OD:/图床 --transfers=8 --checkers=16 -P -n
